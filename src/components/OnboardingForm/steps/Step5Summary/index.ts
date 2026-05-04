@@ -1,1 +1,1 @@
-export { default } from './Step5Summary';
+export { default as Step5Summary } from './Step5Summary';

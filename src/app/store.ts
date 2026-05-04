@@ -10,7 +10,7 @@ import {
   REGISTER,
   REHYDRATE,
 } from 'redux-persist';
-import onboardingFormReducer from '../components/OnboardingForm/formSlice';
+import onboardingFormReducer from '../components/OnboardingForm/state/formSlice';
 
 const rootReducer = combineReducers({
   onboardingForm: onboardingFormReducer,

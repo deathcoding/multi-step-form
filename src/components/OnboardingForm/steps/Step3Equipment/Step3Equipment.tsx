@@ -2,8 +2,16 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm, useWatch } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
 import type { RootState } from '@/app/store';
-import { nextStep, prevStep } from '@/components/OnboardingForm/formSlice';
-import { osTypes, type Step3Data, step3Schema } from './schema';
+import { FormField } from '@/components/OnboardingForm/fields/FormField';
+import {
+  primaryButtonClassName,
+  secondaryButtonClassName,
+  selectFieldClassName,
+  textControlClassName,
+  withFieldError,
+} from '@/components/OnboardingForm/fields/formFieldClasses';
+import { nextStep, prevStep } from '@/components/OnboardingForm/state/formSlice';
+import { keyboardLayouts, osTypes, type Step3Data, step3Schema } from './schema';
 
 function Step3Equipment() {
   const dispatch = useDispatch();
@@ -20,6 +28,8 @@ function Step3Equipment() {
       needsMonitor: formData.needsMonitor ?? false,
       monitorCount: formData.monitorCount,
       os: formData.os ?? osTypes[0],
+      needCorporatePhone: formData.needCorporatePhone ?? false,
+      keyboardLayout: formData.keyboardLayout ?? keyboardLayouts[0],
     },
   });
 
@@ -29,15 +39,11 @@ function Step3Equipment() {
     dispatch(nextStep(data));
   };
 
-  const inputClassName =
-    'mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-slate-800 shadow-sm outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-200';
-  const errorInputClassName = 'border-red-500 focus:border-red-500 focus:ring-red-200';
-
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
       <h2 className="text-xl font-semibold text-slate-900">Шаг 3: Оборудование</h2>
 
-      <div className="rounded-lg border border-slate-200 bg-slate-50 p-3">
+      <div className="space-y-3 rounded-lg border border-slate-200 bg-slate-50 p-3">
         <label htmlFor="needsMonitor" className="flex cursor-pointer items-center gap-3 text-sm font-medium text-slate-700">
           <input
             id="needsMonitor"
@@ -47,52 +53,61 @@ function Step3Equipment() {
           />
           Нужен монитор
         </label>
+        <label htmlFor="needCorporatePhone" className="flex cursor-pointer items-center gap-3 text-sm font-medium text-slate-700">
+          <input
+            id="needCorporatePhone"
+            type="checkbox"
+            className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-2 focus:ring-blue-300"
+            {...register('needCorporatePhone')}
+          />
+          Нужен корпоративный телефон
+        </label>
       </div>
 
       {needsMonitor && (
-        <div>
-          <label htmlFor="monitorCount" className="text-sm font-medium text-slate-700">
-            Количество мониторов
-          </label>
+        <FormField id="monitorCount" label="Количество мониторов" error={errors.monitorCount?.message}>
           <input
             id="monitorCount"
             type="number"
             min={1}
-            className={`${inputClassName} ${errors.monitorCount ? errorInputClassName : ''}`}
+            max={3}
+            className={withFieldError(textControlClassName, !!errors.monitorCount)}
             {...register('monitorCount', {
               setValueAs: (value) => (value === '' ? undefined : Number(value)),
             })}
           />
-          {errors.monitorCount && <p className="mt-1 text-xs text-red-600">{errors.monitorCount.message}</p>}
-        </div>
+        </FormField>
       )}
 
-      <div>
-        <label htmlFor="os" className="text-sm font-medium text-slate-700">
-          Операционная система
-        </label>
-        <select id="os" className={`${inputClassName} ${errors.os ? errorInputClassName : ''}`} {...register('os')}>
+      <FormField id="os" label="Операционная система" error={errors.os?.message}>
+        <select id="os" className={withFieldError(selectFieldClassName, !!errors.os)} {...register('os')}>
           {osTypes.map((os) => (
             <option key={os} value={os}>
               {os}
             </option>
           ))}
         </select>
-        {errors.os && <p className="mt-1 text-xs text-red-600">{errors.os.message}</p>}
-      </div>
+      </FormField>
+
+      <FormField id="keyboardLayout" label="Раскладка клавиатуры" error={errors.keyboardLayout?.message}>
+        <select
+          id="keyboardLayout"
+          className={withFieldError(selectFieldClassName, !!errors.keyboardLayout)}
+          {...register('keyboardLayout')}
+        >
+          {keyboardLayouts.map((layout) => (
+            <option key={layout} value={layout}>
+              {layout}
+            </option>
+          ))}
+        </select>
+      </FormField>
 
       <div className="flex justify-between pt-2">
-        <button
-          type="button"
-          onClick={() => dispatch(prevStep())}
-          className="rounded-lg border border-slate-300 bg-transparent px-5 py-2 text-sm font-semibold text-slate-600 transition hover:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-slate-200"
-        >
+        <button type="button" onClick={() => dispatch(prevStep())} className={secondaryButtonClassName}>
           Назад
         </button>
-        <button
-          type="submit"
-          className="rounded-lg bg-blue-600 px-5 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-300"
-        >
+        <button type="submit" className={primaryButtonClassName}>
           Далее
         </button>
       </div>

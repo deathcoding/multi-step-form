@@ -2,8 +2,15 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
 import type { RootState } from '@/app/store';
-import { nextStep } from '@/components/OnboardingForm/formSlice';
-import { type Step1Data, step1Schema } from './schema';
+import { FormField } from '@/components/OnboardingForm/fields/FormField';
+import {
+  primaryButtonClassName,
+  textControlClassName,
+  withFieldError,
+} from '@/components/OnboardingForm/fields/formFieldClasses';
+import { genderLabels } from '@/components/OnboardingForm/lib/labels';
+import { nextStep } from '@/components/OnboardingForm/state/formSlice';
+import { genders, type Step1Data, step1Schema, toBirthDateInputDisplay } from './schema';
 
 function Step1Personal() {
   const dispatch = useDispatch();
@@ -19,6 +26,10 @@ function Step1Personal() {
       firstName: formData.firstName ?? '',
       lastName: formData.lastName ?? '',
       email: formData.email ?? '',
+      phone: formData.phone ?? '',
+      birthDate: toBirthDateInputDisplay(formData.birthDate ?? ''),
+      linkedinUrl: formData.linkedinUrl ?? '',
+      gender: formData.gender,
     },
   });
 
@@ -26,56 +37,89 @@ function Step1Personal() {
     dispatch(nextStep(data));
   };
 
-  const inputClassName =
-    'mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-slate-800 shadow-sm outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-200';
-  const errorInputClassName = 'border-red-500 focus:border-red-500 focus:ring-red-200';
-
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
       <h2 className="text-xl font-semibold text-slate-900">Шаг 1: Личные данные</h2>
 
-      <div>
-        <label htmlFor="firstName" className="text-sm font-medium text-slate-700">
-          Имя
-        </label>
+      <FormField id="firstName" label="Имя" error={errors.firstName?.message}>
         <input
           id="firstName"
-          className={`${inputClassName} ${errors.firstName ? errorInputClassName : ''}`}
+          className={withFieldError(textControlClassName, !!errors.firstName)}
           {...register('firstName')}
         />
-        {errors.firstName && <p className="mt-1 text-xs text-red-600">{errors.firstName.message}</p>}
-      </div>
+      </FormField>
 
-      <div>
-        <label htmlFor="lastName" className="text-sm font-medium text-slate-700">
-          Фамилия
-        </label>
+      <FormField id="lastName" label="Фамилия" error={errors.lastName?.message}>
         <input
           id="lastName"
-          className={`${inputClassName} ${errors.lastName ? errorInputClassName : ''}`}
+          className={withFieldError(textControlClassName, !!errors.lastName)}
           {...register('lastName')}
         />
-        {errors.lastName && <p className="mt-1 text-xs text-red-600">{errors.lastName.message}</p>}
-      </div>
+      </FormField>
 
-      <div>
-        <label htmlFor="email" className="text-sm font-medium text-slate-700">
-          Email
-        </label>
+      <FormField id="email" label="Email" error={errors.email?.message}>
         <input
           id="email"
           type="email"
-          className={`${inputClassName} ${errors.email ? errorInputClassName : ''}`}
+          className={withFieldError(textControlClassName, !!errors.email)}
           {...register('email')}
         />
-        {errors.email && <p className="mt-1 text-xs text-red-600">{errors.email.message}</p>}
-      </div>
+      </FormField>
+
+      <FormField id="phone" label="Телефон" error={errors.phone?.message}>
+        <input
+          id="phone"
+          type="tel"
+          autoComplete="tel"
+          placeholder="+7 ..."
+          className={withFieldError(textControlClassName, !!errors.phone)}
+          {...register('phone')}
+        />
+      </FormField>
+
+      <FormField id="birthDate" label="Дата рождения" error={errors.birthDate?.message}>
+        <input
+          id="birthDate"
+          type="text"
+          inputMode="numeric"
+          autoComplete="bday"
+          placeholder="дд.мм.гггг"
+          maxLength={10}
+          className={withFieldError(textControlClassName, !!errors.birthDate)}
+          {...register('birthDate')}
+        />
+      </FormField>
+
+      <FormField id="linkedinUrl" label="LinkedIn (необязательно)" error={errors.linkedinUrl?.message}>
+        <input
+          id="linkedinUrl"
+          type="url"
+          placeholder="https://linkedin.com/in/..."
+          className={withFieldError(textControlClassName, !!errors.linkedinUrl)}
+          {...register('linkedinUrl')}
+        />
+      </FormField>
+
+      <fieldset className="space-y-2">
+        <legend className="text-sm font-medium text-slate-700">Пол</legend>
+        <div className="mt-2 flex flex-wrap gap-4">
+          {genders.map((value) => (
+            <label key={value} className="flex cursor-pointer items-center gap-2 text-sm text-slate-700">
+              <input
+                type="radio"
+                value={value}
+                className="h-4 w-4 border-gray-300 text-blue-600 focus:ring-2 focus:ring-blue-300"
+                {...register('gender')}
+              />
+              {genderLabels[value]}
+            </label>
+          ))}
+        </div>
+        {errors.gender && <p className="mt-1 text-xs text-red-600">{errors.gender.message}</p>}
+      </fieldset>
 
       <div className="flex justify-end pt-2">
-        <button
-          type="submit"
-          className="rounded-lg bg-blue-600 px-5 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-300"
-        >
+        <button type="submit" className={primaryButtonClassName}>
           Далее
         </button>
       </div>

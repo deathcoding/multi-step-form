@@ -1,4 +1,4 @@
-import MultiStepWizard from '@/components/OnboardingForm/MultiStepWizard';
+import { MultiStepWizard } from '@/components/OnboardingForm';
 
 function App() {
   return (

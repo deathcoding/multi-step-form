@@ -1,1 +1,1 @@
-export { default } from './Step4Comments';
+export { default as Step4Comments } from './Step4Comments';

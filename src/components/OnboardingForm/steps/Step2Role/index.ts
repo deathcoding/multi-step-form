@@ -1,1 +1,1 @@
-export { default } from './Step2Role';
+export { default as Step2Role } from './Step2Role';

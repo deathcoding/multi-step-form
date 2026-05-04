@@ -1,1 +1,1 @@
-export { default } from './Step3Equipment';
+export { default as Step3Equipment } from './Step3Equipment';
