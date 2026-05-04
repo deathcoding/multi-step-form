@@ -1,6 +1,6 @@
 import { useDispatch } from 'react-redux';
-import { primaryButtonClassName } from '@/components/OnboardingForm/fields/formFieldClasses';
-import { resetForm } from '@/components/OnboardingForm/state/formSlice';
+import { primaryButtonClassName } from '../fields/formFieldClasses';
+import { resetForm } from '../state/formSlice';
 
 function SubmissionSuccess() {
   const dispatch = useDispatch();
@@ -13,7 +13,8 @@ function SubmissionSuccess() {
       <div className="space-y-2">
         <h2 className="text-xl font-semibold text-slate-900">Готово</h2>
         <p className="text-base text-slate-600">
-          Ваши данные отправлены :) можете посмотреть их в консоли.
+          Заявка отмечена как отправленная. В этом демо данные остаются в браузере (localStorage)
+          до сброса формы.
         </p>
       </div>
       <button type="button" onClick={() => dispatch(resetForm())} className={primaryButtonClassName}>

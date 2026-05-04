@@ -17,7 +17,6 @@ function Step5Summary() {
   const formData = useSelector((state: RootState) => state.onboardingForm.formData);
 
   const handleSubmitApplication = () => {
-    console.log('Итоговые данные:', formData);
     dispatch(completeSubmission());
   };
 
